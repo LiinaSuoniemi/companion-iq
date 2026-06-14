@@ -1,0 +1,5 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.tmp
+_frames_tmp/

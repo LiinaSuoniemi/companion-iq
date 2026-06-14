@@ -1,4 +1,4 @@
-# Neurotype and Learning-Difference Reference (synthetic showcase)
+# Neurotype and Learning-Difference Reference (synthetic)
 
 DISCLAIMER: This is a synthetic, plain-language reference written to show what the tool could ground its support on. It is not complete, not a diagnostic tool, and not medical advice. Profiles are individual; these are patterns, not boxes. Many people have more than one of these at once (co-occurrence is common), and most have a "spiky" profile: strong in some areas, hard in others. None of these is a measure of intelligence or effort. The point is matching the right tool to how a brain works, not labelling a person.
 

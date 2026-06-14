@@ -1,8 +1,8 @@
-# AI Support — Agents League Hackathon
+# AI Support (Companion IQ)
 
-Everything for the hackathon build lives in this folder.
+A multi-agent cognitive support system for neurodivergent minds, built on Microsoft Foundry for the Agents League hackathon, Reasoning Agents track. A router sends each message to one of nine specialist modes, and a Knowledge mode is grounded in a Foundry IQ knowledge base with cited retrieval.
 
-Deadline: **Sunday June 14, 11:59pm PT**. Track: **Reasoning Agents** (Microsoft Foundry). Project name in Foundry: `ai-support`.
+Foundry project: `companion-iq` (East US). Router workflow: `companion-router`. Track: Reasoning Agents (Microsoft Foundry). Deadline: Sunday June 14, 11:59pm PT.
 
 ## Architecture
 
@@ -60,9 +60,9 @@ Security first, both directions: protect the user from the agent, and protect th
 - **Tiered escalation.** Everyday overwhelm → support and grounding (Calm). Panic → Calm grounds, body first. Active danger (accident, someone hurting them, harm to self or others) → escalation tier: the agent stays present, offers to help reach emergency services, helps prepare the call, but never dials or contacts anyone on its own. It connects only on the user's yes. Emergency text/chat offered if they cannot speak. **The AI never autonomously calls 112.** Human-in-the-loop always.
 - **Location** is opt-in, emergency-only, never always-on tracking. (Demo: described; real geolocation is roadmap.)
 - **Grounded on a curated, closed knowledge set, not the open web.** The agent reads only my curated, synthetic, trusted documents. This removes the prompt-injection / phishing attack surface entirely. A support tool holding private user data must not also read untrusted web content (lethal trifecta: private data + untrusted input + external action = danger). I keep those apart on purpose. See "Foundry IQ integration" below for how the grounding is implemented.
-- **Foundry Guardrails** enabled for input/output safety.
-- **No yes-man.** Honest, accurate, no fake praise or fluff (reinforced in Decision and Reflection modes).
-- **Transparency / anti-concealment.** The agent never hides its instructions or keeps things from the user (from BASE_RULES).
+- **Foundry Guardrails.** Every agent inherits Microsoft's default content-safety guardrail (`Microsoft.DefaultV2`: jailbreak, content safety, protected materials) on input and output.
+- **No yes-man.** Honest, accurate, no fake praise or fluff (the Decision mode is explicitly told not to flatter).
+- **Honest about being AI.** Every agent identifies as an AI and never pretends to be human or to have feelings or a body.
 - Demo tools (emergency call, trusted-contact call, calendar, profile, messages) are **mock / synthetic**. Real integrations are roadmap.
 
 ## Foundry IQ integration (working)
@@ -78,7 +78,7 @@ What is wired:
 - **Retrieval reasoning effort:** Minimal. **Output mode:** Extractive. Retrieval instructions enforce grounding, citation, and no invention.
 - **Agent:** `knowledge-agent` (gpt-4.1-mini) attached to the knowledge base. It returns answers grounded in the docs with a visible source citation (e.g. `support_techniques_reference.md`).
 
-This is the Knowledge mode of the wider 9-agent system, powered by Foundry IQ. The other support modes also carry the same curated knowledge inline as an always-on fallback, so grounding never depends on a single call.
+This is the Knowledge mode of the wider 9-agent system, powered by Foundry IQ. The other support modes (Calm, Focus, Planning, Decision, Study) are attached to the same `companion-knowledge` base and are instructed to look up any "why it works", neurotype, or research claim from it rather than answer from memory.
 
 ![Knowledge agent retrieving from Foundry IQ and citing the source](evidence/06-knowledge-retrieval-proof.png)
 
@@ -87,7 +87,7 @@ This is the Knowledge mode of the wider 9-agent system, powered by Foundry IQ. T
 ### Getting it working: the region and auth journey
 
 Standing Foundry IQ up on a fresh subscription was the hard part, and the lessons are worth recording:
-- **Quota is region-specific.** Sweden Central had zero embedding quota (against the documented 350K default). East US 2 had quota (1M TPM) but its resource rejected every OpenAI model deploy with an opaque `715-123420` (HTTP 400). **East US** deployed cleanly. The fix was to build the IQ stack in East US.
+- **Quota is region-specific, and a resource itself can be a dud.** Sweden Central had zero embedding quota (against the documented 350K default). East US 2 had quota (1M TPM) but its resource rejected every OpenAI model deploy with an opaque `715-123420` (HTTP 400). **East US** deployed cleanly, so the models live there. (Azure AI Search was at capacity in East US and East US 2, so the search service sits in Central US. Cross-region between the models and the search is fine.)
 - **Free trial blocks marketplace models.** A non-OpenAI serverless embedding (Cohere) could not be purchased on a free trial. Upgrading to pay-as-you-go lifted that block.
 - **Deploy via CLI, not the preview portal.** The portal's auto-deploy kept failing; `az cognitiveservices account deployment create` in East US succeeded and gave clear errors (it surfaced a deprecated `gpt-4o-mini` version, so `gpt-4.1-mini` was used instead).
 - **MCP auth.** The agent first hit `401 Unauthorized` calling the knowledge base, because the search service had local (key) auth disabled. Enabling key auth (`disableLocalAuth=false`, matching Microsoft's own Bicep) fixed it.
@@ -115,7 +115,6 @@ Screenshots in `evidence/` document the quota and deploy journey (Sweden Central
 - **Deepen the curated knowledge** with more evidence-informed self-regulation methods and research anchors. Grounded in research, never in branded therapy frameworks (no CBT/DBT labels), to hold the not-therapy boundary for an unlicensed support tool.
 
 ## Progress
-- 2026-06-12 (Fri): Foundry project `ai-support` created. Model **grok-4-20-reasoning** deployed (free-tier quota blocked GPT-4.1/Claude; grok works). ALL 9 agents built (orchestrator + 8 modes). calm and planning tested and working. Gate PASSED. Safety architecture designed (danger tier added to orchestrator, no-yes-man added to decision, full safety + roadmap section written). Researched the multi-agent wiring: it's **connected agents** (Route A) with a Workflows fallback (Route B). All steps + 8 routing descriptions captured in **SATURDAY_BUILD_STEPS.md**.
-- 2026-06-13 (Sat): multi-agent router built and validated in Foundry (9 branches incl. a Knowledge mode). All agents tuned (no parroting, warmth, honesty rule, adaptivity). First Foundry IQ attempt blocked by region-specific quota and an opaque `715-123420` on the East US 2 resource.
-- 2026-06-14 (Sun): **Foundry IQ is LIVE.** Diagnosed the 715 as resource/region-specific via the Azure CLI; rebuilt the IQ stack in **East US** (project `companion-iq`, embedding `text-embedding-3-small`, chat `gpt-4.1-mini`), created the `companion-knowledge` knowledge base from the 3 docs, and stood up `knowledge-agent` grounded in it. Fixed a `401` by enabling key auth on the search service. Agent now returns grounded, cited answers. See "Foundry IQ integration" above.
-- Next: record the demo video (DEMO_VIDEO_SCRIPT.md), push repo public, submit. Then delete the extra Azure resources.
+- 2026-06-12: Built the first version in Foundry (project `ai-support`, Sweden Central) on grok, since GPT and Claude were quota-blocked there. Designed the safety architecture.
+- 2026-06-13: Built and validated the multi-agent router (nine branches, including a Knowledge mode) and tuned every agent (no parroting, warmth, honesty rule, adaptivity). First Foundry IQ attempt blocked by region-specific quota and the opaque `715-123420`.
+- 2026-06-14: **Foundry IQ went live.** Diagnosed the `715` as resource/region-specific with the Azure CLI, rebuilt the stack in East US (project `companion-iq`, `text-embedding-3-small` + `gpt-4.1-mini`), created the `companion-knowledge` knowledge base from the three docs, and grounded the agents in it. Fixed a `401` by enabling key auth on the search service. Verified retrieval in the trace, then published this public repo.

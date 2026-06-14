@@ -43,8 +43,8 @@ This is a factual record of every step and every error message, in order. Times 
 - Foundry IQ refuses every embedding model except three OpenAI ones, all of which need quota I do not have.
 - A managed vector index was required to "use" three small text files.
 
-## The decision
-Stopped fighting it. Grounded the agent directly with the three files in its instructions. No embeddings, no vector index, no quota. Documented the Foundry IQ knowledge base as architected and configured but blocked by a platform quota limit.
+## The decision (2026-06-13, later superseded)
+Stopped fighting it for the night. Grounded the agent directly with the three files in its instructions. No embeddings, no vector index, no quota. This was a fallback. It was superseded the next day once Foundry IQ was built for real, see "Actual resolution" below.
 
 ## Resolution: the quota exists in East US 2 (checked 2026-06-13 ~21:30)
 
@@ -54,7 +54,18 @@ The zero-quota problem was Sweden Central only. With "Show all" on the quota pag
 - text-embedding-3-small, East US, Standard: 0/350K TPM
 - (Sweden Central, where everything was built, had zero embedding quota of any type.)
 
-So Foundry IQ IS buildable. Plan: build the knowledge base in East US 2 (the Foundry IQ cookbook's default agentic-retrieval region), deploy text-embedding-3-small or -large there, create the knowledge source from the 3 curated docs, create the knowledge base, and connect it to the knowledge-agent. This satisfies the hackathon's mandatory "integrate a Microsoft IQ layer" requirement.
+So Foundry IQ IS buildable somewhere. The plan that night was to build it in East US 2.
+
+## Actual resolution (2026-06-14): built in East US, not East US 2
+
+The East US 2 plan did not hold. Even on pay-as-you-go, the East US 2 resource still rejected every OpenAI model deploy with the same `715-123420`, through the portal AND the Azure CLI. A clean CLI test in a fresh resource isolated the cause: it was not an account-wide gate and not a portal bug. The East US 2 resource itself was bad. The same deploy in **East US** succeeded immediately.
+
+So the working stack was built in **East US** (project `companion-iq`):
+- `text-embedding-3-small` and `gpt-4.1-mini` deployed via the Azure CLI on Standard. (The CLI also surfaced that `gpt-4o-mini`'s only version was deprecated, so `gpt-4.1-mini` was used.)
+- `companion-knowledge` knowledge base created from the three docs, with Azure AI Search in **Central US** (East US and East US 2 search were at capacity).
+- The agents are attached to it and grounded through it. A `401` on first query was fixed by enabling key auth on the search service (`disableLocalAuth=false`).
+
+Foundry IQ is live. The mandatory "integrate a Microsoft IQ layer" requirement is met.
 
 ## Facts worth keeping
 - Generation-3 embedding models are documented to receive a 350K TPM default quota per region. Source: Microsoft Learn, "Azure OpenAI Quotas and Limits."

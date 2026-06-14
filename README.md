@@ -2,6 +2,8 @@
 
 A multi-agent cognitive support system for neurodivergent minds, built on Microsoft Foundry for the Agents League hackathon, Reasoning Agents track. A router sends each message to one of nine specialist modes, and a Knowledge mode is grounded in a Foundry IQ knowledge base with cited retrieval.
 
+It is an agentic offshoot of [Companion OS](https://github.com/LiinaSuoniemi/companion_os), my cognitive-support tool, rebuilt here as a multi-agent system on Foundry.
+
 Foundry project: `companion-iq` (East US). Router workflow: `companion-router`. Track: Reasoning Agents (Microsoft Foundry). Deadline: Sunday June 14, 11:59pm PT.
 
 ## Architecture

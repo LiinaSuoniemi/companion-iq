@@ -34,6 +34,3 @@ Real research areas so the tool can speak to more than one neurotype, at a gener
 - Dyscalculia: difficulty with number sense and the approximate number system (Brian Butterworth).
 - Dyspraxia / DCD: developmental coordination disorder, a recognised motor-planning condition.
 - Dysgraphia: difficulty with the transcription and motor side of writing.
-
-## Vision, not evidence
-The chain "relieve scarcity, then people have capacity to act collectively, and that helps the planet" is a hopeful hypothesis, not a proven causal claim. Present it as long-term vision, never as established fact.

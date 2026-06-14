@@ -6,6 +6,10 @@ It is an agentic offshoot of [Companion OS](https://github.com/LiinaSuoniemi/com
 
 Foundry project: `companion-iq` (East US). Router workflow: `companion-router`. Track: Reasoning Agents (Microsoft Foundry). Deadline: Sunday June 14, 11:59pm PT.
 
+## Demo
+
+A short walkthrough of the live system: routing a panic message to Calm, grounding the body, then answering knowledge questions from the Foundry IQ knowledge base with cited sources. Download or view: [demo.mp4](demo.mp4).
+
 ## Architecture
 
 One router classifies each message and sends it to one specialist mode. A curated, synthetic knowledge set grounds the support modes. Guardrails wrap input and output. Calm is the safety ceiling, and any real danger stays human-in-the-loop. Full notes in `ARCHITECTURE.md`.
